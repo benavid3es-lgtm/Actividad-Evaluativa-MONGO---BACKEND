@@ -138,5 +138,21 @@ def aprendices_por_letra(nivel, letra):
         "Aprendices": resultado
     })
 
+# 10.8. Cantidad de aprendices por nivel de formación y estado específico
+@app.route("/api/cantidadPorNivelEstado/<nivel>/<estado>", methods=["GET"])
+def cantidad_nivel_estado(nivel, estado):
+    nivel_formateado = nivel.upper()
+    estado_formateado = estado.capitalize()
+    filtro = {
+        "NIVEL_DE_FORMACION": nivel_formateado,
+        "ESTADO_APRENDIZ": estado_formateado
+    }
+    cantidad = aprendices.count_documents(filtro)
+    return jsonify({
+        "Nivel_Formacion": nivel_formateado,
+        "Estado_Aprendiz": estado_formateado,
+        "Cantidad": cantidad
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
