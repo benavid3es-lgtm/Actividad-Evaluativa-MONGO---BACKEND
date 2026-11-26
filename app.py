@@ -23,6 +23,15 @@ def cantidad_aprendices():
     cantidad = aprendices.count_documents({})
     return jsonify({"CantidadAprendices": cantidad})
 
+# 10.2. Consultar la cantidad de aprendices por nivel de formación
+@app.route("/api/cantidadAprendices/<nivel>", methods=["GET"])
+def cantidad_aprendices_nivel(nivel):
+    nivel_formateado = nivel.upper()
+    cantidad = aprendices.count_documents({"NIVEL_DE_FORMACION": nivel_formateado})
+    return jsonify({
+        "CantidadAprendices": cantidad,
+        "Nivel de formación": nivel_formateado
+    })
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
