@@ -43,6 +43,26 @@ def programas_por_nivel(nivel):
         "nivel de formación": nivel_formateado,
         "programas": lista_programas
     })
+# 10.4. Listar aprendices certificados de un programa (excluyendo _id)
+@app.route("/api/certificados/<programa>", methods=["GET"])
+def aprendices_certificados(programa):
+    programa_formateado = programa.upper()
+    filtro = {
+        "PROGRAMA": programa_formateado,
+        "ESTADO_APRENDIZ": "Certificado"
+    }
+    proyeccion = {
+        "_id": 0,
+        "FICHA": 1,
+        "NOMBRE": 1,
+        "PRIMER_APELLIDO": 1,
+        "SEGUNDO_APELLIDO": 1
+    }
+    resultado = list(aprendices.find(filtro, proyeccion))
+    return jsonify({
+        "Aprendices_Certificados": resultado,
+        "Programa": programa_formateado
+    })
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
