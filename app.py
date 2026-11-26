@@ -166,5 +166,19 @@ def aprendiz_por_documento(documento):
         "Mensaje": f"No se encontró ningún aprendiz con el documento {documento}"
     }), 404
 
+# 10.10. Listar los nombres únicos de los programas de COMPLEMENTARIA VIRTUAL
+@app.route("/api/programasComplementariaVirtual", methods=["GET"])
+def programas_complementaria_virtual():
+    lista_programas = aprendices.distinct(
+        "PROGRAMA",
+        {"NIVEL_DE_FORMACION": "COMPLEMENTARIA VIRTUAL"}
+    )
+    lista_programas.sort()
+    return jsonify({
+        "Nivel_Formacion": "COMPLEMENTARIA VIRTUAL",
+        "Total_Programas": len(lista_programas),
+        "Programas": lista_programas
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
