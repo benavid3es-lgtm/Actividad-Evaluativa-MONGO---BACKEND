@@ -113,5 +113,30 @@ def terminada_unificacion(programa):
         "Aprendices": resultado
     })
 
+# 10.7. Listado de aprendices por nivel de formación cuyo nombre empieza con una letra
+@app.route("/api/aprendicesLetra/<nivel>/<letra>", methods=["GET"])
+def aprendices_por_letra(nivel, letra):
+    nivel_formateado = nivel.upper()
+    letra_formateada = letra.upper()
+    filtro = {
+        "NIVEL_DE_FORMACION": nivel_formateado,
+        "NOMBRE": {"$regex": f"^{letra_formateada}"}
+    }
+    proyeccion = {
+        "_id": 0,
+        "FICHA": 1,
+        "PROGRAMA": 1,
+        "NOMBRE": 1,
+        "PRIMER_APELLIDO": 1,
+        "SEGUNDO_APELLIDO": 1
+    }
+    resultado = list(aprendices.find(filtro, proyeccion))
+    return jsonify({
+        "Nivel_Formacion": nivel_formateado,
+        "Letra_Inicial": letra_formateada,
+        "Total_Encontrados": len(resultado),
+        "Aprendices": resultado
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
