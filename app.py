@@ -90,5 +90,28 @@ def aprendices_por_certificar(ficha, limite):
         "Cantidad de Aprendices por Certificar": resultado
     })
 
+# 10.6. Listado de aprendices por programa con estado de ficha "Terminada por unificación"
+@app.route("/api/terminadaUnificacion/<programa>", methods=["GET"])
+def terminada_unificacion(programa):
+    programa_formateado = programa.upper()
+    filtro = {
+        "PROGRAMA": programa_formateado,
+        "ESTADO_FICHA": "Terminada por unificación"
+    }
+    proyeccion = {
+        "_id": 0,
+        "FICHA": 1,
+        "NUMERO_DOCUMENTO": 1,
+        "NOMBRE": 1,
+        "PRIMER_APELLIDO": 1,
+        "SEGUNDO_APELLIDO": 1
+    }
+    resultado = list(aprendices.find(filtro, proyeccion))
+    return jsonify({
+        "Programa": programa_formateado,
+        "Estado_Ficha": "Terminada por unificación",
+        "Aprendices": resultado
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
