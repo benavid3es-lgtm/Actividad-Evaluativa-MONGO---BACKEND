@@ -113,58 +113,67 @@ def terminada_unificacion(programa):
         "Aprendices": resultado
     })
 
-# 10.7. Listado de aprendices por nivel de formación cuyo nombre empieza con una letra
-@app.route("/api/aprendicesLetra/<nivel>/<letra>", methods=["GET"])
-def aprendices_por_letra(nivel, letra):
-    nivel_formateado = nivel.upper()
-    letra_formateada = letra.upper()
+# 10.7. Listado de aprendices del programa VISUALIZACION DE DATOS USANDO POWER BI (o cualquier programa)
+@app.route("/api/aprendicesPrograma/<programa>", methods=["GET"])
+def aprendices_por_programa(programa):
+    programa_formateado = programa.upper()
     filtro = {
-        "NIVEL_DE_FORMACION": nivel_formateado,
-        "NOMBRE": {"$regex": f"^{letra_formateada}"}
+        "PROGRAMA": programa_formateado
     }
     proyeccion = {
         "_id": 0,
-        "FICHA": 1,
         "PROGRAMA": 1,
+        "FICHA": 1,
         "NOMBRE": 1,
         "PRIMER_APELLIDO": 1,
         "SEGUNDO_APELLIDO": 1
     }
     resultado = list(aprendices.find(filtro, proyeccion))
     return jsonify({
-        "Nivel_Formacion": nivel_formateado,
-        "Letra_Inicial": letra_formateada,
-        "Total_Encontrados": len(resultado),
+        "Programa": programa_formateado,
+        "Total_Aprendices": len(resultado),
         "Aprendices": resultado
     })
 
-# 10.8. Cantidad de aprendices por nivel de formación y estado específico
-@app.route("/api/cantidadPorNivelEstado/<nivel>/<estado>", methods=["GET"])
-def cantidad_nivel_estado(nivel, estado):
-    nivel_formateado = nivel.upper()
-    estado_formateado = estado.capitalize()
+
+# 10.8. Cantidad de aprendices de un programa en estado Certificado
+@app.route("/api/cantidadCertificadosPrograma/<programa>", methods=["GET"])
+def cantidad_certificados_programa(programa):
+    programa_formateado = programa.upper()
     filtro = {
-        "NIVEL_DE_FORMACION": nivel_formateado,
-        "ESTADO_APRENDIZ": estado_formateado
+        "PROGRAMA": programa_formateado,
+        "ESTADO_APRENDIZ": "Certificado"
     }
     cantidad = aprendices.count_documents(filtro)
     return jsonify({
-        "Nivel_Formacion": nivel_formateado,
-        "Estado_Aprendiz": estado_formateado,
+        "Programa": programa_formateado,
+        "Estado_Aprendiz": "Certificado",
         "Cantidad": cantidad
     })
 
-# 10.9. Consultar los datos de un aprendiz específico por número de documento
-@app.route("/api/aprendiz/<int:documento>", methods=["GET"])
-def aprendiz_por_documento(documento):
-    aprendiz = aprendices.find_one({"NUMERO_DOCUMENTO": documento}, {"_id": 0})
-    if aprendiz:
-        return jsonify({
-            "Aprendiz": aprendiz
-        })
+
+# 10.9. Listado de aprendices de una ficha por estado del aprendiz
+@app.route("/api/porEstado/<int:ficha>/<estado>", methods=["GET"])
+def aprendices_por_estado(ficha, estado):
+    patron_estado = estado.strip().replace("o", "[oó]").replace("O", "[oó]")
+    filtro = {
+        "FICHA": ficha,
+        "ESTADO_APRENDIZ": {"$regex": f"^{patron_estado}$", "$options": "i"}
+    }
+    proyeccion = {
+        "_id": 0,
+        "FICHA": 1,
+        "NOMBRE": 1,
+        "PRIMER_APELLIDO": 1,
+        "PROGRAMA": 1,
+        "SEGUNDO_APELLIDO": 1
+    }
+    resultado = list(aprendices.find(filtro, proyeccion))
     return jsonify({
-        "Mensaje": f"No se encontró ningún aprendiz con el documento {documento}"
-    }), 404
+        "Aprendices": resultado,
+        "Estado de los Aprendices": estado,
+        "Ficha": str(ficha)
+    })
 
 # 10.10. Listar los nombres únicos de los programas de COMPLEMENTARIA VIRTUAL
 @app.route("/api/programasComplementariaVirtual", methods=["GET"])
