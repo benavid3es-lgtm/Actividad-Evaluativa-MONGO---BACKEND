@@ -154,5 +154,17 @@ def cantidad_nivel_estado(nivel, estado):
         "Cantidad": cantidad
     })
 
+# 10.9. Consultar los datos de un aprendiz específico por número de documento
+@app.route("/api/aprendiz/<int:documento>", methods=["GET"])
+def aprendiz_por_documento(documento):
+    aprendiz = aprendices.find_one({"NUMERO_DOCUMENTO": documento}, {"_id": 0})
+    if aprendiz:
+        return jsonify({
+            "Aprendiz": aprendiz
+        })
+    return jsonify({
+        "Mensaje": f"No se encontró ningún aprendiz con el documento {documento}"
+    }), 404
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
