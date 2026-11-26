@@ -33,5 +33,16 @@ def cantidad_aprendices_nivel(nivel):
         "Nivel de formación": nivel_formateado
     })
 
+# 10.3. Listar los nombres únicos de programas por nivel de formación
+@app.route("/api/programas/<nivel>", methods=["GET"])
+def programas_por_nivel(nivel):
+    nivel_formateado = nivel.upper()
+    lista_programas = aprendices.distinct("PROGRAMA", {"NIVEL_DE_FORMACION": nivel_formateado})
+    lista_programas.sort()
+    return jsonify({
+        "nivel de formación": nivel_formateado,
+        "programas": lista_programas
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
